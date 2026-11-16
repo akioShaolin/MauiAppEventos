@@ -1,401 +1,60 @@
-# AppHotel — Agenda 14
+# MauiAppEventos — Agenda 15
 
-Projeto desenvolvido para a **Agenda 14 de Desenvolvimento de Sistemas II**, utilizando **C#**, **XAML** e **.NET MAUI**.
+Aplicativo de cadastro de eventos para a Agenda 15 de Desenvolvimento de Sistemas II, desenvolvido por Pedro Akio Sakuma com C#, XAML, .NET MAUI e .NET 10 para Windows.
 
-O projeto é baseado no AppHotel disponibilizado como material de estudo do curso e foi adaptado e personalizado durante a atividade.
+## Funcionamento
 
-Nesta versão foram realizadas alterações de compatibilidade, interface gráfica e interação com os componentes da aplicação.
+Preencha nome, local, participantes, início, término e custo individual; clique em **Ver resumo**. A segunda página apresenta todos os dados e destaca o custo total. **Voltar** permite revisar os dados preservados no formulário. Os dados ficam somente em memória; não há banco de dados nem gravação permanente.
 
----
+O contador usa botões próprios de incremento e decremento, com mínimo de 1 e estados Normal, PointerOver, Pressed e Disabled. Campos obrigatórios, datas e custo são validados com alertas simples. O custo usa `double.TryParse`, aceita zero e vírgula decimal (ex.: `25,50`), sem separador de milhar. Valores inválidos ou não finitos são rejeitados.
 
-## Resultado final
+## Model e conceitos
 
-### Tela de reserva
+`Models/Evento.cs` possui `Nome`, `Local`, `DataInicio`, `DataTermino`, `NumeroParticipantes` e `CustoPorParticipante`.
 
-![Tela de reserva](screenshots/9.sou-rico-so-nesse-app.png)
+- `DateTime` representa as datas, sem horário. Os valores anuláveis do `DatePicker` são verificados antes de acessar `.Value`.
+- `TimeSpan Duracao` calcula `DataTermino - DataInicio`; `DuracaoDias` retorna `Duracao.Days`.
+- `CustoTotal` calcula `NumeroParticipantes * CustoPorParticipante` na model. A duração não multiplica o custo.
+- Ao alterar o início, `dtp_termino.MinimumDate` passa a ser o dia seguinte e a seleção final é corrigida quando necessário. O início é limitado a 30/12/2100 e o término a 31/12/2100.
+- `NavigationPage` é criada em `App.CreateWindow`. O cadastro instancia `Evento` e chama `Navigation.PushAsync(new ResumoEvento { BindingContext = evento })`.
+- A página de resumo recebe o objeto por `BindingContext`, com bindings tipados por `x:DataType` e `StringFormat` para datas (`dd/MM/yyyy`), duração e moeda (`C`). A cultura é `pt-BR` para valores em reais.
 
-### Resumo da hospedagem
+## Interface
 
-![Resumo da reserva](screenshots/10.ate-que-nao-ficou-tao-caro.png)
+Degradê azul escuro/roxo, destaque violeta, cards claros arredondados, Open Sans, estilos globais no `App.xaml`, `ScrollView` e largura máxima de 600 para adaptação à janela.
 
----
-
-## Objetivo
-
-O AppHotel permite realizar uma simulação do valor de uma hospedagem informando:
-
-- quantidade de adultos;
-- quantidade de crianças;
-- tipo de suíte;
-- data de check-in;
-- data de check-out.
-
-Após o preenchimento, o aplicativo apresenta um resumo contendo os dados da reserva, a quantidade de diárias e o valor total calculado.
-
----
-
-## Tecnologias utilizadas
-
-- C#
-- XAML
-- .NET MAUI
-- .NET 10
-- Visual Studio
-- Git
-- GitHub
-
-A versão atual do projeto está configurada para execução no Windows através do target:
-
-```xml
-<TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
-```
-
----
-
-## Alterações realizadas
-
-### Migração para .NET 10
-
-O projeto-base utilizava **.NET 8** e possuía targets para diferentes plataformas.
-
-Para executar o projeto no ambiente utilizado durante a atividade, ele foi atualizado para **.NET 10 para Windows**.
-
-Também foram removidas dependências antigas que não eram necessárias para a execução atual.
-
----
-
-### Compatibilidade com o DatePicker do .NET 10
-
-No .NET 10, a propriedade `Date` do `DatePicker` trabalha com `DateTime?`.
-
-Por esse motivo, alguns trechos do código original precisaram ser adaptados.
-
-Exemplo:
-
-```csharp
-dtpck_checkout.MinimumDate =
-    dtpck_checkin.Date.Value.AddDays(1);
-```
-
-Também foram adaptadas as datas utilizadas para criar o objeto de hospedagem:
-
-```csharp
-DataCheckIn = dtpck_checkin.Date.Value,
-DataCheckOut = dtpck_checkout.Date.Value,
-```
-
----
-
-## Nova interface
-
-A interface gráfica foi reformulada mantendo as funcionalidades originais do projeto.
-
-Entre as principais mudanças estão:
-
-- nova paleta de cores;
-- fundo em degradê;
-- utilização de cards com cantos arredondados;
-- reorganização dos elementos;
-- nova hierarquia visual;
-- substituição visual da fonte Kalam por Open Sans;
-- novos estilos globais;
-- melhoria da exibição do `Picker`;
-- melhoria da exibição dos `DatePicker`;
-- nova tela de resumo da hospedagem;
-- destaque visual para o valor total.
-
-As cores e estilos principais foram centralizados no arquivo `App.xaml`, facilitando alterações futuras no design.
-
----
-
-## Controle de hóspedes
-
-O projeto original utilizava o componente `Stepper`.
-
-Durante a personalização, o controle foi substituído por botões próprios de incremento e decremento.
-
-Exemplo:
+## Estrutura
 
 ```text
-Adultos      2    -   +
-Crianças     2    -   +
+MauiAppEventos/
+|-- Models/Evento.cs
+|-- Views/
+|   |-- CadastroEvento.xaml / .xaml.cs
+|   `-- ResumoEvento.xaml / .xaml.cs
+|-- Platforms/Windows/
+|-- Resources/ (AppIcon, Fonts, Splash)
+|-- App.xaml / App.xaml.cs
+|-- MauiProgram.cs
+|-- MauiAppEventos.csproj
+`-- MauiAppEventos.sln
 ```
 
-Essa alteração permitiu maior controle sobre a aparência dos componentes.
+## Execução no Windows com .NET 10
 
-Foram criados estados visuais diferentes para:
+Instale o SDK .NET 10, o Windows SDK e a carga de trabalho MAUI para Windows (pelo instalador do Visual Studio ou `dotnet workload install maui-windows`). No diretório do projeto:
 
-- estado normal;
-- passagem do mouse (`PointerOver`);
-- botão pressionado (`Pressed`);
-- botão desabilitado.
-
-A quantidade é limitada entre **0 e 10 pessoas** para cada categoria.
-
----
-
-## Seleção da suíte
-
-As opções de hospedagem são representadas pela classe `Quarto`.
-
-```csharp
-public class Quarto
-{
-    public string Descricao { get; set; }
-    public double ValorDiariaAdulto { get; set; }
-    public double ValorDiariaCrianca { get; set; }
-}
+```powershell
+dotnet restore MauiAppEventos.sln
+dotnet build MauiAppEventos.sln -c Debug
+dotnet run --project MauiAppEventos.csproj -f net10.0-windows10.0.19041.0
 ```
 
-O aplicativo possui atualmente as seguintes opções:
+Também é possível abrir `MauiAppEventos.sln` no Visual Studio compatível com .NET 10 e executar com Windows Machine. O projeto usa `WindowsPackageType=None`, permitindo execução local sem instalação de pacote MSIX.
 
-- Suíte Super Luxo;
-- Suíte Luxo;
-- Suíte Single;
-- Suíte Crise.
+## Capturas de tela
 
-Os quartos são armazenados em uma:
+As imagens do funcionamento serão adicionadas após os testes finais.
 
-```csharp
-List<Quarto>
-```
+## Referência da base
 
-e apresentados ao usuário através de um `Picker`.
-
----
-
-## Model de hospedagem
-
-A classe `Hospedagem` reúne as informações utilizadas para calcular a reserva.
-
-Entre suas propriedades estão:
-
-```csharp
-QuartoSelecionado
-QntAdultos
-QntCriancas
-DataCheckIn
-DataCheckOut
-```
-
-A quantidade de dias é calculada pela propriedade:
-
-```csharp
-public int Estadia
-{
-    get => DataCheckOut.Subtract(DataCheckIn).Days;
-}
-```
-
-O valor total é calculado considerando:
-
-```text
-(valor dos adultos + valor das crianças)
-                  ×
-        quantidade de diárias
-```
-
-Essa lógica está encapsulada na propriedade `ValorTotal`.
-
----
-
-## Validação das datas
-
-O projeto utiliza componentes `DatePicker` para selecionar o período da hospedagem.
-
-O check-out deve ocorrer depois do check-in.
-
-Quando a data de entrada é alterada, os limites permitidos para a data de saída também são atualizados.
-
-Exemplo:
-
-```csharp
-dtpck_checkout.MinimumDate =
-    data_selecionada_checkin.AddDays(1);
-
-dtpck_checkout.MaximumDate =
-    data_selecionada_checkin.AddMonths(6);
-```
-
----
-
-## Navegação e BindingContext
-
-Após clicar em **Calcular diária**, é criado um objeto `Hospedagem`.
-
-```csharp
-Hospedagem h = new Hospedagem
-{
-    QuartoSelecionado = (Quarto)pck_quarto.SelectedItem,
-    QntAdultos = quantidadeAdultos,
-    QntCriancas = quantidadeCriancas,
-    DataCheckIn = dtpck_checkin.Date.Value,
-    DataCheckOut = dtpck_checkout.Date.Value
-};
-```
-
-O objeto é enviado para a tela de resumo utilizando `BindingContext`:
-
-```csharp
-await Navigation.PushAsync(
-    new HospedagemContratada()
-    {
-        BindingContext = h
-    }
-);
-```
-
-A segunda tela utiliza os bindings do XAML para exibir automaticamente as informações da hospedagem.
-
----
-
-## Estrutura principal
-
-```text
-MauiAppHotel/
-│
-├── Models/
-│   ├── Hospedagem.cs
-│   └── Quarto.cs
-│
-├── Views/
-│   ├── ContratacaoHospedagem.xaml
-│   ├── ContratacaoHospedagem.xaml.cs
-│   ├── HospedagemContratada.xaml
-│   └── HospedagemContratada.xaml.cs
-│
-├── Resources/
-├── App.xaml
-├── App.xaml.cs
-├── MauiProgram.cs
-└── MauiAppHotel.csproj
-
-screenshots/
-```
-
----
-
-## Evolução durante a atividade
-
-Além das telas finais, foram registradas várias etapas do desenvolvimento.
-
-### Adaptação para .NET 10
-
-![Migração para .NET 10](screenshots/1.alterando-para-versao-10.0.png)
-
-### Erros encontrados após a migração
-
-![Erros de compatibilidade](screenshots/2.erros-em-funcoes-adapatar-para-versao-10.png)
-
-### Correção relacionada às datas
-
-![Correção DateTime](screenshots/3.corrigindo-erros-relacionados-ao-systemdate.png)
-
-### Primeira execução do projeto original
-
-![Primeira execução](screenshots/4.primeira-execucao-bem-sucedida.png)
-
-### Início da revisão visual
-
-![Revisão visual](screenshots/5.revisao-visual-do-app.png)
-
-### Ajustes de interface
-
-![Alterações visuais](screenshots/6.alteracoes-no-codigo-para-melhor-visual.png)
-
-### Ajuste dos controles
-
-![Hover](screenshots/7.ajuste-necessario-no-hover.png)
-
-### Ajuste do Picker
-
-![Picker](screenshots/8.correcao-de-tamanho-necessaria.png)
-
----
-
-## Como executar
-
-### Requisitos
-
-- Windows 10 ou Windows 11;
-- Visual Studio com suporte a desenvolvimento .NET MAUI;
-- .NET 10 SDK;
-- workload do .NET MAUI para Windows.
-
-Clone o repositório:
-
-```bash
-git clone https://github.com/akioShaolin/MauiAppHotel.git
-```
-
-Entre na pasta:
-
-```bash
-cd MauiAppHotel
-```
-
-Abra:
-
-```text
-MauiAppHotel.sln
-```
-
-No Visual Studio, selecione:
-
-```text
-Windows Machine
-```
-
-e execute o projeto.
-
-Caso o Windows impeça a implantação local do aplicativo, pode ser necessário habilitar o **Modo de Desenvolvedor** nas configurações do sistema.
-
----
-
-## Conceitos trabalhados
-
-Durante esta atividade foram utilizados e revisados conceitos como:
-
-- Programação Orientada a Objetos;
-- classes e objetos;
-- propriedades;
-- `get` e `set`;
-- encapsulamento;
-- listas de objetos com `List<T>`;
-- BindingContext;
-- Data Binding;
-- navegação entre páginas;
-- manipulação de eventos;
-- DatePicker;
-- Picker;
-- Grid;
-- Border;
-- estilos XAML;
-- estados visuais;
-- tratamento de exceções;
-- validação de dados;
-- Git e GitHub.
-
----
-
-## Projeto original
-
-Este repositório é um **fork** do projeto AppHotel criado por **Tiago Antonio da Silva** e utilizado como material de estudo do curso.
-
-Repositório original:
-
-https://github.com/tiagotas/MauiAppHotel
-
-Código-base utilizado na Agenda 14:
-
-https://github.com/tiagotas/MauiAppHotel/tree/4e655cb68610572865b83fc420655601b1a5f1ff
-
-As alterações apresentadas neste repositório foram realizadas para a atividade da **Agenda 14 de Desenvolvimento de Sistemas II**.
-
----
-
-## Autor das modificações
-
-**Pedro Akio Sakuma**
-
-GitHub: [@akioShaolin](https://github.com/akioShaolin)
+A estrutura visual e os recursos compartilhados foram adaptados do [projeto anterior da Agenda 14](https://github.com/akioShaolin/MauiAppHotel), de Pedro Akio Sakuma, baseado no material de Tiago Antonio da Silva. O cadastro, a model e o resumo desta atividade são dedicados a eventos.

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+ xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="MauiAppEventos.App">
+ <Application.Resources>
+  <Color x:Key="Primary">#7C3AED</Color>
+  <LinearGradientBrush x:Key="PageGradient" StartPoint="0,0" EndPoint="1,1">
+   <GradientStop Color="#0F172A" Offset="0" />
+   <GradientStop Color="#38205E" Offset="1" />
+  </LinearGradientBrush>
+  <Style TargetType="ContentPage">
+   <Setter Property="Background" Value="{StaticResource PageGradient}" />
+  </Style>
+  <Style TargetType="Label">
+   <Setter Property="FontFamily" Value="OpenSansRegular" />
+   <Setter Property="FontSize" Value="15" />
+   <Setter Property="TextColor" Value="#1E1B4B" />
+  </Style>
+  <Style x:Key="PageTitle" TargetType="Label">
+   <Setter Property="FontFamily" Value="OpenSansSemibold" />
+   <Setter Property="FontSize" Value="30" />
+   <Setter Property="TextColor" Value="White" />
+  </Style>
+  <Style x:Key="Caption" TargetType="Label">
+   <Setter Property="FontSize" Value="13" />
+   <Setter Property="TextColor" Value="#64748B" />
+  </Style>
+  <Style x:Key="Card" TargetType="Border">
+   <Setter Property="BackgroundColor" Value="#F8FAFC" />
+   <Setter Property="StrokeThickness" Value="0" />
+   <Setter Property="StrokeShape" Value="RoundRectangle 22" />
+   <Setter Property="Padding" Value="24" />
+  </Style>
+  <Style TargetType="Entry">
+   <Setter Property="FontFamily" Value="OpenSansRegular" />
+   <Setter Property="TextColor" Value="#1E1B4B" />
+   <Setter Property="PlaceholderColor" Value="#64748B" />
+   <Setter Property="BackgroundColor" Value="#EDE9FE" />
+   <Setter Property="HeightRequest" Value="48" />
+  </Style>
+  <Style TargetType="DatePicker">
+   <Setter Property="FontFamily" Value="OpenSansRegular" />
+   <Setter Property="TextColor" Value="#1E1B4B" />
+   <Setter Property="BackgroundColor" Value="#EDE9FE" />
+   <Setter Property="Format" Value="dd/MM/yyyy" />
+   <Setter Property="HorizontalOptions" Value="Fill" />
+  </Style>
+  <Style x:Key="PrimaryButton" TargetType="Button">
+   <Setter Property="FontFamily" Value="OpenSansSemibold" />
+   <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+   <Setter Property="TextColor" Value="White" />
+   <Setter Property="CornerRadius" Value="12" />
+   <Setter Property="HeightRequest" Value="50" />
+   <Setter Property="FontSize" Value="16" />
+  </Style>
+  <Style x:Key="CounterButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+   <Setter Property="WidthRequest" Value="46" />
+   <Setter Property="HeightRequest" Value="46" />
+   <Setter Property="Padding" Value="0" />
+   <Setter Property="FontSize" Value="22" />
+   <Setter Property="VisualStateManager.VisualStateGroups">
+    <VisualStateGroupList><VisualStateGroup x:Name="CommonStates">
+     <VisualState x:Name="Normal"><VisualState.Setters>
+      <Setter Property="BackgroundColor" Value="#EDE9FE" /><Setter Property="TextColor" Value="#6D28D9" />
+      <Setter Property="Opacity" Value="1" /><Setter Property="Scale" Value="1" />
+     </VisualState.Setters></VisualState>
+     <VisualState x:Name="PointerOver"><VisualState.Setters>
+      <Setter Property="BackgroundColor" Value="#DDD6FE" /><Setter Property="TextColor" Value="#5B21B6" />
+      <Setter Property="Opacity" Value="1" /><Setter Property="Scale" Value="1.05" />
+     </VisualState.Setters></VisualState>
+     <VisualState x:Name="Pressed"><VisualState.Setters>
+      <Setter Property="BackgroundColor" Value="#7C3AED" /><Setter Property="TextColor" Value="White" />
+      <Setter Property="Opacity" Value="1" /><Setter Property="Scale" Value="0.95" />
+     </VisualState.Setters></VisualState>
+     <VisualState x:Name="Disabled"><VisualState.Setters>
+      <Setter Property="BackgroundColor" Value="#E2E8F0" /><Setter Property="TextColor" Value="#64748B" />
+      <Setter Property="Opacity" Value="0.4" /><Setter Property="Scale" Value="1" />
+     </VisualState.Setters></VisualState>
+    </VisualStateGroup></VisualStateGroupList>
+   </Setter>
+  </Style>
+ </Application.Resources>
+</Application>
